@@ -30,7 +30,8 @@ import org.json.simple.parser.ParseException;
 public class DemoCsvToJson {
 
     public static void main(String[] args) throws IOException, ParseException {
-        main01();
+        System.out.println(getConnectionToken());
+//        main01();
 
     }
 
@@ -119,7 +120,6 @@ public class DemoCsvToJson {
 //        }
 //        long t6 = System.currentTimeMillis();
 //        System.out.println("Search Performance - " + (t6 - t5));
-
     }
 
     public static void main02(String[] args) throws IOException, ParseException {
@@ -425,13 +425,20 @@ public class DemoCsvToJson {
 
     }
 
+    public static String getConnectionToken() throws ParseException, IOException {
+        StringBuffer sbLogin = sendPostDevLogin();
+        JSONObject loginJsonResponse = (JSONObject) new JSONParser().parse(sbLogin.toString());
+        String token = (String) loginJsonResponse.get("token");
+        return token;
+    }
+
     public static StringBuffer sendPostDevLogin() throws MalformedURLException, IOException {
 
         String connectionTokenStr;
-        connectionTokenStr = "email=nunna2000@gmail.com&password=dfdfdf";
+        connectionTokenStr = "email=himanshu.dugar@login2explore.com&password=dfdfdf";
         byte[] postData = connectionTokenStr.getBytes(StandardCharsets.UTF_8);
         int postDataLength = postData.length;
-        String urlStr = "http://localhost:5577/user/login";
+        String urlStr = "http://dev1api.login2explore.com:5577/user/login";
         URL url = new URL(urlStr);
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("POST");
