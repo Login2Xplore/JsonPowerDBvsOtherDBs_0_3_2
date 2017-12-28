@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package hkd.test;
+package hkd.db.crud;
 
 /**
  *
@@ -32,15 +32,15 @@ public class MongodbOp {
 
     public static void main(String[] args) throws IOException {
         MongoClient mongo = new MongoClient();
-        DB db = mongo.getDB("chicago");
+        mongo.dropDatabase("BUSSLICS");
+        DB db = mongo.getDB("BUSSLICS");
         System.out.println("BasicDBObject example...");
         BasicDBObject document = new BasicDBObject();
         DBObject dbObject;
 
-        DBCollection collection = db.getCollection("ChicagoBL");
-        collection.drop();
+        DBCollection collection = db.getCollection("CHICAGO");
 
-        String inputFileName = "/home/dev/himanshu/nbWorkspace/PI_0_3_2/jpdbExamples/JsonPowerDBvsOtherDBs_0_3_2/data/cbl/csv/ChicagoBL-000f.csv";
+        String inputFileName = "./data/cbl/csv/ChicagoBL-001k.csv";
         //String outputFile = "/home/dev/dev/dataset/BussLics/ChicagoBL-500k_2.json";
         ArrayList<String> columnNameArrList = new ArrayList<>();
         FileInputStream fstream = null;
@@ -64,20 +64,30 @@ public class MongodbOp {
                 columnNameArrList.add(sb.toString());
                 int count = 0;
                 JSONArray jsonArray = new JSONArray();
+                
+
                 while ((strLine = br.readLine()) != null) {
                     JSONObject jSONObject = getJsonObjForLine(strLine, columnNameArrList);
                     dbObject = (DBObject) JSON.parse(jSONObject.toString());
 
                     collection.insert(dbObject);
+                    // collection.createIndex(dbObject);
 //                    System.out.println(jSONObject);
 //                    count++;
 //                    if (count == 5) {
 //                        break;
 //                    }
 
-                    
                 }
                 
+                for (int i = 0; i < columnNameArrList.size(); i++) {
+                    DBObject dbObj = new BasicDBObject();
+                    dbObj.put(columnNameArrList.get(i), 1);
+                    collection.createIndex(dbObj);
+
+                }
+                
+
                 DBCursor cursorDoc = collection.find();
 //                
 //                    while (cursorDoc.hasNext()) {
@@ -86,10 +96,82 @@ public class MongodbOp {
 
             }
 
+            // 1. BasicDBObject example
+//	document.put("database", "mkyongDB");
+//	document.put("table", "hosting");
+//	BasicDBObject documentDetail = new BasicDBObject();
+//	documentDetail.put("records", 99);
+//	documentDetail.put("index", "vps_index1");
+//	documentDetail.put("active", "true");
+//	document.put("detail", documentDetail);
+//            collection.insert(document);
+//
+//            DBCursor cursorDoc = collection.find();
+//            while (cursorDoc.hasNext()) {
+//                System.out.println(cursorDoc.next());
+//            }
+//	collection.remove(new BasicDBObject());
+//
+//	// 2. BasicDBObjectBuilder example
+//	System.out.println("BasicDBObjectBuilder example...");
+//	BasicDBObjectBuilder documentBuilder = BasicDBObjectBuilder.start()
+//		.add("database", "mkyongDB")
+//                .add("table", "hosting");
+//
+//	BasicDBObjectBuilder documentBuilderDetail = BasicDBObjectBuilder.start()
+//                .add("records", "99")
+//                .add("index", "vps_index1")
+//		.add("active", "true");
+//
+//	documentBuilder.add("detail", documentBuilderDetail.get());
+//
+//	collection.insert(documentBuilder.get());
+//
+//	DBCursor cursorDocBuilder = collection.find();
+//	while (cursorDocBuilder.hasNext()) {
+//		System.out.println(cursorDocBuilder.next());
+//	}
 //
 //	collection.remove(new BasicDBObject());
-//        collection.createIndex("LEGAL NAME");
-
+//
+//	// 3. Map example
+//	System.out.println("Map example...");
+//	Map<String, Object> documentMap = new HashMap<String, Object>();
+//	documentMap.put("database", "mkyongDB");
+//	documentMap.put("table", "hosting");
+//
+//	Map<String, Object> documentMapDetail = new HashMap<String, Object>();
+//	documentMapDetail.put("records", "99");
+//	documentMapDetail.put("index", "vps_index1");
+//	documentMapDetail.put("active", "true");
+//
+//	documentMap.put("detail", documentMapDetail);
+//
+//	collection.insert(new BasicDBObject(documentMap));
+//
+//	DBCursor cursorDocMap = collection.find();
+//	while (cursorDocMap.hasNext()) {
+//		System.out.println(cursorDocMap.next());
+//	}
+//
+//	collection.remove(new BasicDBObject());
+//
+//	// 4. JSON parse example
+//	System.out.println("JSON parse example...");
+//
+//	String json = "{'database' : 'mkyongDB','table' : 'hosting'," +
+//	  "'detail' : {'records' : 99, 'index' : 'vps_index1', 'active' : 'true'}}}";
+//
+//	DBObject dbObject = (DBObject)JSON.parse(json);
+//
+//	collection.insert(dbObject);
+//
+//	DBCursor cursorDocJSON = collection.find();
+//	while (cursorDocJSON.hasNext()) {
+//		System.out.println(cursorDocJSON.next());
+//	}
+//
+//	collection.remove(new BasicDBObject());
         } catch (Exception e) {
             e.printStackTrace();
         }
