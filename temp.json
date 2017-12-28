@@ -1,0 +1,65 @@
+{
+    "abc": "555555555",
+    "ppu": "555555555",
+    "batters": {
+        "ppu": 0.55,
+        "batter": [{
+                "id": "1001",
+                "type": "Regular"
+            }, {
+                "id": "1002",
+                "type": "Chocolate"
+            }, {
+                "id": "1003",
+                "type": "Blueberry"
+            }, {
+                "id": "1004",
+                "type": "Devil's Food"
+            }],
+        "bat": {
+            "batCol": 1234
+        }
+    },
+    "name": "555555555",
+    "id": "0001",
+    "type": "555555555",
+    "topping": [{
+            "id": "5001",
+            "type": "None"
+        }, {
+            "id": "5002",
+            "type": "Glazed"
+        }, {
+            "id": "5005",
+            "type": "Sugar"
+        }, {
+            "id": "5007",
+            "type": "Powdered Sugar"
+        }, {
+            "id": "5006",
+            "type": "Chocolate with Sprinkles"
+        }, {
+            "id": "5003",
+            "type": "Chocolate"
+        }, {
+            "id": "5004",
+            "type": "Maple"
+        }],
+    "topping1": [{
+            "id": ["5001", "5002", "5003"]
+        }, {
+            "types": ["Glazed", "Sugar", "Powdered Sugar"]
+        }],
+    "Array3": "555555555",
+    "topping2": {
+        "types": ["Glazed", "Sugar", "Powdered Sugar"],
+        "topping2_2": {
+            "key_1": 20
+        },
+        "topping2_1": ["5001", "5002", {
+                "key_1": 20
+            }, "5003"]
+    },
+    "Array1": ["555555555", "555555555", "555555555", "555555555", "555555555"],
+    "Array2": "555555555"
+}
