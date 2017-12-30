@@ -30,6 +30,7 @@ public class JPDBPerformance {
 //    private static final String BASE_URL = "http://dev1api.login2explore.com:5577";
     private static final String BASE_URL = "http://localhost:5577";
     private static final String IML_PART_URL = "/api/iml";
+    private static final String IDL_PART_URL = "/api/idl";
     private static final String LOGIN_PART_URL = "/user/login";
 
     private static final int TOTAL_COLS = 14;
@@ -43,7 +44,7 @@ public class JPDBPerformance {
 
         String token = getConnectionToken();
 
-        //deleteDatabase(token);
+        deleteDatabase(token);
 
         jpdbOp(token);
     }
@@ -92,7 +93,7 @@ public class JPDBPerformance {
                 + DB_NAME
                 + "\""
                 + "}";
-        executeIMLCommand(delRequest);
+        executeCommand(delRequest, IDL_PART_URL);
     }
 
     public static void insertDataToJSONPowerDb(String token, ArrayList<JSONObject> jsonArray) throws MalformedURLException, IOException {
@@ -101,9 +102,9 @@ public class JPDBPerformance {
         }
     }
 
-    public static StringBuffer executeIMLCommand(String imlRequest) throws MalformedURLException, IOException {
+    public static StringBuffer executeCommand(String imlRequest, String commandType) throws MalformedURLException, IOException {
         String urlParameters = null;
-        String urlStr = BASE_URL + IML_PART_URL;
+        String urlStr = BASE_URL + commandType;
         URL url = new URL(urlStr);
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         //add reuqest header
@@ -158,45 +159,9 @@ public class JPDBPerformance {
                 + "\"jsonStr\": \n"
                 + jsonObj
                 + "\n"
-                + "}";;
-        String urlParameters = null;
-        String urlStr = BASE_URL + IML_PART_URL;
-        URL url = new URL(urlStr);
-        HttpURLConnection con = (HttpURLConnection) url.openConnection();
-        //add reuqest header
-        con.setRequestMethod("POST");
-        con.setRequestProperty("User-Agent", "/");
-        con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
-        con.setRequestProperty("Content-Type", "application/json");
-
-        urlParameters = putRequest;
-        // Send post request
-        con.setDoOutput(true);
-        try (DataOutputStream wr = new DataOutputStream(con.getOutputStream())) {
-            wr.writeBytes(urlParameters);
-
-            wr.flush();
-        }
-        // System.out.println("\nSending 'POST' request to URL : " + urlStr);
-        // System.out.println("Post parameters : " + urlParameters);
-//        System.out.println("Response Code : " + responseCode);
-        // System.out.println("Content Type : " + con.getContentType());
-        //  System.out.println("Response Default Message : " + con.getResponseMessage());
-//            System.out.println("Content : " + con.getContent());
-
-        int responseCode = con.getResponseCode();
-        StringBuffer response;
-        try (BufferedReader in = new BufferedReader(
-                new InputStreamReader(con.getInputStream()))) {
-            String inputLine;
-            response = new StringBuffer();
-            while ((inputLine = in.readLine()) != null) {
-                response.append(inputLine);
-            }
-        }
-        //print result
-        // System.out.println("Response\n" + response);
-        return response;
+                + "}";
+        
+        return executeCommand(putRequest, IML_PART_URL);
     }
 
     public static ArrayList<String> getColumnNameFromCSV(String inputFileName) {
@@ -247,8 +212,13 @@ public class JPDBPerformance {
 
             br = new BufferedReader(new InputStreamReader(fstream), 1024 * 1024 * 1);
 
+            boolean columnFlag = true;
             while ((strLine = br.readLine()) != null) //Reading from file
             {
+                if(columnFlag) {
+                    columnFlag = false;
+                    continue;
+                }
                 rowsArrList.add(strLine);
             }
         } catch (FileNotFoundException ex) {
