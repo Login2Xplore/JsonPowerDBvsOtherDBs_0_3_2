@@ -29,8 +29,12 @@ public class MongoDBPerformance {
     private static final String COLL_NAME = "test";
     private static final String FILE_PATH = "./data/cbl/csv/";
     private static final String FILE_NAME = "ChicagoBL-000f.csv";
-
+    
     public static void main(String[] args) {
+        mongoDBOp();
+    }
+
+    public static void mongoDBOp() {
         MongoClient mongoClient = new MongoClient();
         mongoClient.dropDatabase(DB_NAME);
         MongoDatabase database = mongoClient.getDatabase(DB_NAME);
@@ -67,6 +71,7 @@ public class MongoDBPerformance {
             long it2 = System.currentTimeMillis();
             System.out.println("Time taken for Creating Index Columns: " + (it2 - it1) + "ms");
 
+            // Reading from file
             ArrayList<String> rowsArrList = new ArrayList();
             long dt1 = System.currentTimeMillis();
             while ((strLine = br.readLine()) != null) //Reading from file
@@ -76,6 +81,7 @@ public class MongoDBPerformance {
             long dt2 = System.currentTimeMillis();
             System.out.println("Time taken for Reading from file: " + (dt2 - dt1) + "ms");
 
+            // Creating documents from rows read from file
             ArrayList<Document> docs = new ArrayList<Document>();
             long t1 = System.currentTimeMillis();
             for (int i = 0; i < rowsArrList.size(); i++) //Creating Documents
@@ -85,6 +91,7 @@ public class MongoDBPerformance {
             long t2 = System.currentTimeMillis();
             System.out.println("Time taken for Making Documents: " + (t2 - t1) + "ms");
 
+            // Inserting data into mongoDB collection
             long ft1 = System.currentTimeMillis();
             for (int i = 0; i < rowsArrList.size(); i++) //Making Documents
             {
@@ -98,6 +105,7 @@ public class MongoDBPerformance {
 //                collection.insertOne(doc);
 //
 //            }
+
             // Update starts from here
             ArrayList<Long> arrList = new ArrayList<Long>();
 
@@ -124,6 +132,7 @@ public class MongoDBPerformance {
             long ut2 = System.currentTimeMillis();
             System.out.println("Time taken for Updating = " + (ut2 - ut1) + " ms");
 
+            // Deleting all rows from MongoCollection
             long dti1 = System.currentTimeMillis();
             for (int i = 0; i < arrList.size(); i++) //deleting documents
             {
