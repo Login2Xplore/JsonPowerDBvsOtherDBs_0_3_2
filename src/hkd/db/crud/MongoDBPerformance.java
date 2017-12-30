@@ -22,7 +22,7 @@ import static com.mongodb.client.model.Filters.eq;
  * @author himanshu dugar
  */
 public class MongoDBPerformance {
-    
+
     private static final int TOTAL_COLS = 14;
     private static final String SEARCH_COL_NAME = "LICENSE ID";
     private static final String DB_NAME = "Himdb" ;
@@ -35,6 +35,11 @@ public class MongoDBPerformance {
         mongoClient.dropDatabase(DB_NAME);
         MongoDatabase database = mongoClient.getDatabase(DB_NAME);
         MongoCollection<Document> collection = database.getCollection(COLL_NAME);
+
+        System.out.println("MongoDB Performance for Creating Indexes, Inserting , Updating, Deleting Documents");
+        System.out.println("Data file used = " + FILE_NAME);
+        System.out.println("");
+
         String inputFileName = FILE_PATH + FILE_NAME;
         ArrayList<String> columnNameArrayList = new ArrayList<String>();
         FileInputStream fstream = null;
@@ -58,40 +63,49 @@ public class MongoDBPerformance {
             }
             columnNameArrayList.add(sb.toString());
 
+            long totalTime = 0;
             // Creating indexes and calculating time to create indexes
-            long it1 = System.currentTimeMillis();
+            long ti1 = System.currentTimeMillis();
             for (int colNo = 0; colNo < TOTAL_COLS; colNo++) //Creating indexes 
             {
                 collection.createIndex(Indexes.ascending(columnNameArrayList.get(colNo)));
             }
-            long it2 = System.currentTimeMillis();
-            System.out.println("Time taken for Creating Index Columns: " + (it2 - it1) + "ms");
+            long ti2 = System.currentTimeMillis();
+            long tiDiff = ti2 - ti1;
+            totalTime += tiDiff;
+            System.out.println("Time taken for Creating Index Columns: " + tiDiff + "ms");
 
             ArrayList<String> rowsArrList = new ArrayList();
-            long dt1 = System.currentTimeMillis();
+            long tr1 = System.currentTimeMillis();
             while ((strLine = br.readLine()) != null) //Reading from file
             {
                 rowsArrList.add(strLine);
             }
-            long dt2 = System.currentTimeMillis();
-            System.out.println("Time taken for Reading from file: " + (dt2 - dt1) + "ms");
+            long tr2 = System.currentTimeMillis();
+            long trDiff = tr2 - tr1;
+            totalTime += trDiff;
+            System.out.println("Time taken for Reading from file: " + trDiff + "ms");
 
             ArrayList<Document> docs = new ArrayList<Document>();
-            long t1 = System.currentTimeMillis();
+            long td1 = System.currentTimeMillis();
             for (int i = 0; i < rowsArrList.size(); i++) //Creating Documents
             {
                 docs.add(getDocument(rowsArrList.get(i), columnNameArrayList));
             }
-            long t2 = System.currentTimeMillis();
-            System.out.println("Time taken for Making Documents: " + (t2 - t1) + "ms");
+            long td2 = System.currentTimeMillis();
+            long tdDiff = td2 - td1;
+            totalTime += tdDiff;
+            System.out.println("Time taken for Making Documents: " + tdDiff + "ms");
 
-            long ft1 = System.currentTimeMillis();
+            long ta1 = System.currentTimeMillis();
             for (int i = 0; i < rowsArrList.size(); i++) //Making Documents
             {
                 collection.insertOne(docs.get(i));
             }
-            long ft2 = System.currentTimeMillis();
-            System.out.println("Time taken for Inserting:" + (ft2 - ft1) + "ms");
+            long ta2 = System.currentTimeMillis();
+            long taDiff = ta2 - ta1;
+            totalTime += taDiff;
+            System.out.println("Time taken for Inserting:" + taDiff + "ms");
 
 //            while ((strLine = br.readLine()) != null) {
 //                Document doc = getDocument(strLine, columnNameArrayList);
@@ -113,7 +127,7 @@ public class MongoDBPerformance {
                 cursor.close();
             }
 
-            long ut1 = System.currentTimeMillis();
+            long tu1 = System.currentTimeMillis();
             for (int i = 0; i < arrList.size(); i++) { //updating documents
 //                Document myDoc = collection.find(eq(SEARCH_COL_NAME, arrList.get(i))).first();
 //                collection.updateOne(myDoc, new Document("$set", new Document("ACCOUNT NUMBER", i)));
@@ -121,18 +135,25 @@ public class MongoDBPerformance {
                 collection.updateOne(eq(SEARCH_COL_NAME, arrList.get(i)), new Document("$set", new Document("ACCOUNT NUMBER", i)));
                 //System.out.println(myDoc);
             }
-            long ut2 = System.currentTimeMillis();
-            System.out.println("Time taken for Updating = " + (ut2 - ut1) + " ms");
+            long tu2 = System.currentTimeMillis();
+            long tuDiff = tu2 - tu1;
+            totalTime += tuDiff;
+            System.out.println("Time taken for Updating = " + tuDiff + " ms");
 
-            long dti1 = System.currentTimeMillis();
+            long tDel1 = System.currentTimeMillis();
             for (int i = 0; i < arrList.size(); i++) //deleting documents
             {
                 collection.deleteOne(eq(SEARCH_COL_NAME, arrList.get(i)));
             }
-            long dti2 = System.currentTimeMillis();
-            System.out.println("Time taken for Deleting: " + (dti2 - dti1) + "ms");
+            long tDel2 = System.currentTimeMillis();
+            long tDelDiff = tDel2 - tDel1;
+            totalTime += tDelDiff;
+            System.out.println("Time taken for Deleting: " + tDelDiff + "ms");
             System.out.println("Documents after deletion: " + collection.count());
             
+            System.out.println("");
+            System.out.println("Total time taken for all the operations = " + totalTime);
+
 //            printData(collection);
         } catch (Exception e) {
             e.printStackTrace();
