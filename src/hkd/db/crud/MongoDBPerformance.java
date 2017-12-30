@@ -29,8 +29,12 @@ public class MongoDBPerformance {
     private static final String COLL_NAME = "test";
     private static final String FILE_PATH = "./data/cbl/csv/";
     private static final String FILE_NAME = "ChicagoBL-000f.csv";
-
+    
     public static void main(String[] args) {
+        mongoDBOp();
+    }
+
+    public static void mongoDBOp() {
         MongoClient mongoClient = new MongoClient();
         mongoClient.dropDatabase(DB_NAME);
         MongoDatabase database = mongoClient.getDatabase(DB_NAME);
@@ -75,6 +79,7 @@ public class MongoDBPerformance {
             totalTime += tiDiff;
             System.out.println("Time taken for Creating Index Columns: " + tiDiff + "ms");
 
+            // Reading from file
             ArrayList<String> rowsArrList = new ArrayList();
             long tr1 = System.currentTimeMillis();
             while ((strLine = br.readLine()) != null) //Reading from file
@@ -86,6 +91,7 @@ public class MongoDBPerformance {
             totalTime += trDiff;
             System.out.println("Time taken for Reading from file: " + trDiff + "ms");
 
+            // Creating documents from rows read from file
             ArrayList<Document> docs = new ArrayList<Document>();
             long td1 = System.currentTimeMillis();
             for (int i = 0; i < rowsArrList.size(); i++) //Creating Documents
@@ -112,6 +118,7 @@ public class MongoDBPerformance {
 //                collection.insertOne(doc);
 //
 //            }
+
             // Update starts from here
             ArrayList<Long> arrList = new ArrayList<Long>();
 
