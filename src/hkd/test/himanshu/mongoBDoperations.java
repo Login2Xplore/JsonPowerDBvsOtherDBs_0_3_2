@@ -15,7 +15,7 @@ import org.bson.Document;
 
 /**
  *
- * @author himanshu
+ * @author himanshu dugar
  */
 public class mongoBDoperations {
     public static void main(String[] args) {
@@ -42,6 +42,9 @@ public class mongoBDoperations {
             cursor.close();
         }
         
+        //Indexing
+        //collection.createIndex(new Document("count", 1));
+        
         //Updating Data
         collection.updateOne(eq("count", 1), new Document("$set", new Document("count", 110)));
         System.out.println(collection.count());
@@ -53,7 +56,7 @@ public class mongoBDoperations {
         MongoCursor<Document> cursor1 = collection.find().iterator();
                 try {
             while (cursor1.hasNext()) {
-                System.out.println(cursor.next().toJson());
+                System.out.println(cursor1.next().toJson());
             }
         } finally {
             cursor1.close();
