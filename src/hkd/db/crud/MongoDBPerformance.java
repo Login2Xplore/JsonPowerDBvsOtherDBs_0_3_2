@@ -28,14 +28,14 @@ public class MongoDBPerformance {
     private static final String DB_NAME = "BussLics";
     private static final String COLL_NAME = "Chicago";
     private static final String FILE_PATH = "./data/cbl/csv/";
-    private static final String FILE_NAME_SMALL = "ChicagoBL-001h.csv";
-    private static final String FILE_NAME = "ChicagoBL-500k.csv";
+    private static final String FILE_NAME_SMALL = "ChicagoBL-000f.csv";
+    private static final String FILE_NAME = "ChicagoBL-001h.csv";
 
     public static void main(String[] args) {
         delDatabase();
         mongoDBOp(FILE_NAME_SMALL);
-//        delDatabase();
-//        mongoDBOp(FILE_NAME);
+        delDatabase();
+        mongoDBOp(FILE_NAME);
     }
 
     public static void delDatabase() {
@@ -157,7 +157,7 @@ public class MongoDBPerformance {
             totalTime += tuDiff;
             System.out.println("Time taken for Updating = " + tuDiff + " ms");
 
-            printData(collection);
+//            printData(collection);
 
             long tDel1 = System.currentTimeMillis();
             for (int i = 0; i < arrList.size(); i++) //deleting documents
