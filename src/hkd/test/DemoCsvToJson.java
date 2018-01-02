@@ -425,15 +425,14 @@ public class DemoCsvToJson {
 
     }
 
-    public static String getConnectionToken() throws ParseException, IOException {
+    public static final String getConnectionToken() throws ParseException, IOException {
         StringBuffer sbLogin = sendPostDevLogin();
         JSONObject loginJsonResponse = (JSONObject) new JSONParser().parse(sbLogin.toString());
         String token = (String) loginJsonResponse.get("token");
         return token;
     }
 
-    public static StringBuffer sendPostDevLogin() throws MalformedURLException, IOException {
-
+    public static final StringBuffer sendPostDevLogin() throws MalformedURLException, IOException {
         String connectionTokenStr;
         connectionTokenStr = "email=himanshu.dugar@login2explore.com&password=dfdfdf";
         byte[] postData = connectionTokenStr.getBytes(StandardCharsets.UTF_8);
