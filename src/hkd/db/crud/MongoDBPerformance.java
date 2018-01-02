@@ -25,26 +25,37 @@ public class MongoDBPerformance {
 
     private static final int TOTAL_COLS = 14;
     private static final String SEARCH_COL_NAME = "LICENSE ID";
-    private static final String DB_NAME = "Himdb" ;
-    private static final String COLL_NAME = "test";
+    private static final String DB_NAME = "BussLics";
+    private static final String COLL_NAME = "Chicago";
     private static final String FILE_PATH = "./data/cbl/csv/";
-    private static final String FILE_NAME = "ChicagoBL-000f.csv";
-    
+    private static final String FILE_NAME_SMALL = "ChicagoBL-000f.csv";
+    private static final String FILE_NAME = "ChicagoBL-001h.csv";
+
     public static void main(String[] args) {
-        mongoDBOp();
+        delDatabase();
+        mongoDBOp(FILE_NAME_SMALL);
+        delDatabase();
+        mongoDBOp(FILE_NAME);
     }
 
-    public static void mongoDBOp() {
+    public static void delDatabase() {
+        MongoClient mongoClient = new MongoClient();
+        mongoClient.dropDatabase(DB_NAME);
+        mongoClient.close();
+    }
+
+    public static void mongoDBOp(String csvFileName) {
         MongoClient mongoClient = new MongoClient();
         mongoClient.dropDatabase(DB_NAME);
         MongoDatabase database = mongoClient.getDatabase(DB_NAME);
         MongoCollection<Document> collection = database.getCollection(COLL_NAME);
 
+        System.out.println("");
         System.out.println("MongoDB Performance for Creating Indexes, Inserting , Updating, Deleting Documents");
-        System.out.println("Data file used = " + FILE_NAME);
+        System.out.println("Data file used = " + csvFileName);
         System.out.println("");
 
-        String inputFileName = FILE_PATH + FILE_NAME;
+        String inputFileName = FILE_PATH + csvFileName;
         ArrayList<String> columnNameArrayList = new ArrayList<String>();
         FileInputStream fstream = null;
         String strLine;
@@ -77,7 +88,7 @@ public class MongoDBPerformance {
             long ti2 = System.currentTimeMillis();
             long tiDiff = ti2 - ti1;
             totalTime += tiDiff;
-            System.out.println("Time taken for Creating Index Columns: " + tiDiff + "ms");
+            System.out.println("Time taken for Creating Index Columns: " + tiDiff + " ms");
 
             // Reading from file
             ArrayList<String> rowsArrList = new ArrayList();
@@ -101,7 +112,7 @@ public class MongoDBPerformance {
             long td2 = System.currentTimeMillis();
             long tdDiff = td2 - td1;
             totalTime += tdDiff;
-            System.out.println("Time taken for Making Documents: " + tdDiff + "ms");
+            System.out.println("Time taken for Making Documents: " + tdDiff + " ms");
 
             long ta1 = System.currentTimeMillis();
             for (int i = 0; i < rowsArrList.size(); i++) //Making Documents
@@ -118,7 +129,6 @@ public class MongoDBPerformance {
 //                collection.insertOne(doc);
 //
 //            }
-
             // Update starts from here
             ArrayList<Long> arrList = new ArrayList<Long>();
 
@@ -147,6 +157,8 @@ public class MongoDBPerformance {
             totalTime += tuDiff;
             System.out.println("Time taken for Updating = " + tuDiff + " ms");
 
+//            printData(collection);
+
             long tDel1 = System.currentTimeMillis();
             for (int i = 0; i < arrList.size(); i++) //deleting documents
             {
@@ -157,13 +169,16 @@ public class MongoDBPerformance {
             totalTime += tDelDiff;
             System.out.println("Time taken for Deleting: " + tDelDiff + "ms");
             System.out.println("Documents after deletion: " + collection.count());
-            
+
             System.out.println("");
             System.out.println("Total time taken for all the operations = " + totalTime);
 
 //            printData(collection);
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            mongoClient.close();
+
         }
     }
 
