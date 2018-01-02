@@ -16,6 +16,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -33,6 +34,7 @@ public class JPDBPerformance {
     private static final String BASE_URL = "http://localhost:5577";
     private static final String IML_PART_URL = "/api/iml";
     private static final String IDL_PART_URL = "/api/idl";
+    private static final String IRL_PART_URL = "/api/irl";
     private static final String LOGIN_PART_URL = "/user/login";
 
     private static final int TOTAL_COLS = 14;
@@ -40,24 +42,28 @@ public class JPDBPerformance {
     private static final String DB_NAME = "BussLic";
     private static final String REL_NAME = "Chicago";
     private static final String FILE_PATH = "./data/cbl/csv/";
-    private static final String FILE_NAME = "ChicagoBL-001k.csv";
+    private static final String FILE_NAME_SMALL = "ChicagoBL-000f.csv";
+    private static final String FILE_NAME = "ChicagoBL-020k.csv";
 
     public static void main(String[] args) throws ParseException, IOException {
 
         String token = getConnectionToken();
 
         deleteDatabase(token);
-
-        jpdbOp(token);
+//        jpdbOp(token, FILE_NAME_SMALL);
+//
+//        deleteDatabase(token);
+//        jpdbOp(token, FILE_NAME);
     }
 
-    private static void jpdbOp(String token) throws ParseException, IOException {
+    private static void jpdbOp(String token, String csvFileName) throws ParseException, IOException {
 
+        System.out.println(">>>");
         System.out.println("JsonPowerDB Performance for Creating Indexes, Inserting , Updating, Deleting Documents");
-        System.out.println("Data file used = " + FILE_NAME);
+        System.out.println("Data file used = " + csvFileName);
         System.out.println("");
 
-        ArrayList<String> columnNameArrayList = getColumnNameFromCSV(FILE_PATH + FILE_NAME);
+        String[] columnNameArray = getColumnNameFromCSV(FILE_PATH + csvFileName);
 
         long totalTime = 0;
         // Creating indexes and calculating time to create indexes
@@ -66,27 +72,27 @@ public class JPDBPerformance {
         {
         }
         long it2 = System.currentTimeMillis();
-        System.out.println("Time taken for Creating Index Columns: " + (it2 - it1) + "ms");
+        System.out.println("Time taken for Creating Index Columns: " + (it2 - it1) + " ms");
 
         // Reading rows as String from file
         long dt1 = System.currentTimeMillis();
-        ArrayList<String> rowsArrList = getRowsFromFile(FILE_PATH + FILE_NAME);
+        String[] rowsArr = getRowsFromFile(FILE_PATH + csvFileName);
         long dt2 = System.currentTimeMillis();
-        System.out.println("Time taken for Reading from file: " + (dt2 - dt1) + "ms");
+        System.out.println("Time taken for Reading from file: " + (dt2 - dt1) + " ms");
 
         // Creating documents from rows read from file
         long t1 = System.currentTimeMillis();
-        ArrayList<JSONObject> jsonObjsArrayList = getAllJsonObjects(rowsArrList, columnNameArrayList);
+        JSONObject[] jsonObjsArray = getAllJsonObjects(rowsArr, columnNameArray);
         long t2 = System.currentTimeMillis();
-        System.out.println("Time taken for Making Documents: " + (t2 - t1) + "ms");
+        System.out.println("Time taken for Making Documents: " + (t2 - t1) + " ms");
 
 //        printData(jsonObjsArrayList);
         long ta1 = System.currentTimeMillis();
-        insertDataToJSONPowerDb(token, jsonObjsArrayList);
+        insertDataToJSONPowerDb(token, jsonObjsArray);
         long ta2 = System.currentTimeMillis();
         long taDiff = ta2 - ta1;
         totalTime += taDiff;
-        System.out.println("Time taken for Inserting:" + taDiff + "ms");
+        System.out.println("Time taken for Inserting:" + taDiff + " ms");
 
     }
 
@@ -101,9 +107,9 @@ public class JPDBPerformance {
         executeCommand(delRequest, IDL_PART_URL);
     }
 
-    public static void insertDataToJSONPowerDb(String token, ArrayList<JSONObject> jsonArray) throws MalformedURLException, IOException {
-        for (int i = 0; i < jsonArray.size(); i++) {
-            insertJSONObjToJSONPowerDb(token, jsonArray.get(i));
+    public static void insertDataToJSONPowerDb(String token, JSONObject[] jsonArray) throws MalformedURLException, IOException {
+        for (int i = 0; i < jsonArray.length; i++) {
+            insertJSONObjToJSONPowerDb(token, jsonArray[i]);
         }
     }
 
@@ -169,7 +175,70 @@ public class JPDBPerformance {
         return executeCommand(putRequest, IML_PART_URL);
     }
 
-    public static ArrayList<String> getColumnNameFromCSV(String inputFileName) {
+    public static StringBuffer deleteRecord(String token) throws IOException, ParseException {
+        String delRequest = "{\n"
+                + "\"token\" : \"" + token + "\",\n"
+                + "\"cmd\" : \"FIND_RECORD\","
+                + "\"dbName\": \""
+                + DB_NAME
+                + "\",\n"
+                + "\"rel\" : \""
+                + REL_NAME
+                + "\",\n"
+                //                + "\"templateStr\": {\n"
+                //                + "\"LICENSE ID\": 1234"
+                //                + "},\n"
+                + "\"jsonStr\": \n"
+                + "{"
+                + "\"LICENSE ID\": "
+                + 1480073
+                + " \n"
+                + "}"
+                + "\n"
+                + "}";
+        //System.out.println(executeCommand(delRequest, IRL_PART_URL));
+
+        StringBuffer r = executeCommand(delRequest, IRL_PART_URL);
+        String str = r.toString();
+        JSONParser parser = new JSONParser();
+        JSONObject json = (JSONObject) parser.parse(str);
+        JSONArray dataJsonArr = (JSONArray) json.get("data");
+        long[] recNos = new long[dataJsonArr.size()];
+        for (int i = 0; i < recNos.length; i++) {
+            JSONObject jObj = (JSONObject) dataJsonArr.get(i);
+            System.out.println(jObj);
+            recNos[i] = (long) (jObj.get("record number"));
+        }
+
+//        System.out.println(json);
+//        System.out.println(json.get("data"));
+//        Object level = json.get("data");
+//        
+//        System.out.println(level);
+        return executeCommand(delRequest, IRL_PART_URL);
+    }
+
+//    public static long findRecordNo(String token)
+//    {
+//        String findRequest="{\n"
+//                + "\"token\" : \"" + token + "\",\n"
+//                + "\"cmd\" : \"FIND_RECORD\","
+//                + "\"dbName\": \""
+//                + DB_NAME
+//                + "\",\n"
+//                + "\"rel\" : \""
+//                + REL_NAME
+//                + "\",\n"
+//                //                + "\"templateStr\": {\n"
+//                //                + "\"LICENSE ID\": 1234"
+//                //                + "},\n"
+//                + "\"record\": "
+//                + 6
+//                + "}";
+//    }
+    
+    
+    public static String[] getColumnNameFromCSV(String inputFileName) {
         FileInputStream fstream = null;
         ArrayList<String> columnNameArrList = new ArrayList<>();
         String strLine;
@@ -203,11 +272,10 @@ public class JPDBPerformance {
                 // Ignore this exception
             }
         }
-        return columnNameArrList;
-
+        return columnNameArrList.toArray(new String[0]);
     }
 
-    public static final ArrayList<String> getRowsFromFile(String inputFileName) {
+    public static final String[] getRowsFromFile(String inputFileName) {
         ArrayList<String> rowsArrList = new ArrayList();
         String strLine;
         FileInputStream fstream = null;
@@ -237,20 +305,20 @@ public class JPDBPerformance {
                 // Ignoring Exception
             }
         }
-        return rowsArrList;
+        return rowsArrList.toArray(new String[0]);
     }
 
-    public static ArrayList<JSONObject> getAllJsonObjects(ArrayList<String> allLinesArrayList, ArrayList<String> allColsArrayList) {
-        ArrayList<JSONObject> jsonObjArrayList = new ArrayList<>();
+    public static JSONObject[] getAllJsonObjects(String[] allLinesArray, String[] allColsArray) {
+        JSONObject[] jsonObjArray = new JSONObject[allLinesArray.length];
 
-        for (int i = 0; i < allLinesArrayList.size(); i++) {
-            jsonObjArrayList.add(getJsonObjForLine(allLinesArrayList.get(i), allColsArrayList));
+        for (int i = 0; i < allLinesArray.length; i++) {
+            jsonObjArray[i] = getJsonObjForLine(allLinesArray[i], allColsArray);
         }
 
-        return jsonObjArrayList;
+        return jsonObjArray;
     }
 
-    public static JSONObject getJsonObjForLine(String line, ArrayList<String> allColsArrayList) {
+    public static JSONObject getJsonObjForLine(String line, String[] allColsArray) {
         StringBuilder sb = new StringBuilder();
         JSONObject resultantJsonObj = new JSONObject();
         int flag = 0;
@@ -273,18 +341,18 @@ public class JPDBPerformance {
                     int intVal = (int) dblVal;
                     if ((dblVal - intVal) == 0.0) {
                         longVal = Long.parseLong(str);
-                        resultantJsonObj.put(allColsArrayList.get(count), longVal);
+                        resultantJsonObj.put(allColsArray[count], longVal);
                     } else {
-                        resultantJsonObj.put(allColsArrayList.get(count), dblVal);
+                        resultantJsonObj.put(allColsArray[count], dblVal);
                     }
 
                 } catch (NumberFormatException nfe) {
                     if ("true".equalsIgnoreCase(str) || "false".equalsIgnoreCase(str)) {
                         boolVal = Boolean.parseBoolean(str);
-                        resultantJsonObj.put(allColsArrayList.get(count), boolVal);
+                        resultantJsonObj.put(allColsArray[count], boolVal);
 
                     } else {
-                        resultantJsonObj.put(allColsArrayList.get(count), str);
+                        resultantJsonObj.put(allColsArray[count], str);
                     }
                 } finally {
                     if (count > 12) {
