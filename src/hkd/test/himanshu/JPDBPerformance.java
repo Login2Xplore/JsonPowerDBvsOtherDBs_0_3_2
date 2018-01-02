@@ -26,7 +26,9 @@ import org.json.simple.parser.ParseException;
  */
 public class JPDBPerformance {
 
-    private static final String CON_TOKEN_CREDENTIAL = "email=himanshu.dugar@login2explore.com&password=dfdfdf";
+//    private static final String CON_TOKEN_CREDENTIAL = "email=himanshu.dugar@login2explore.com&password=dfdfdf";
+    private static final String CON_TOKEN_CREDENTIAL = "email=nunna2000@gmail.com&password=dfdfdf";
+
 //    private static final String BASE_URL = "http://dev1api.login2explore.com:5577";
     private static final String BASE_URL = "http://localhost:5577";
     private static final String IML_PART_URL = "/api/iml";
@@ -35,8 +37,8 @@ public class JPDBPerformance {
 
     private static final int TOTAL_COLS = 14;
     private static final String SEARCH_COL_NAME = "LICENSE ID";
-    private static final String DB_NAME = "Himdb";
-    private static final String REL_NAME = "test";
+    private static final String DB_NAME = "BussLic";
+    private static final String REL_NAME = "Chicago";
     private static final String FILE_PATH = "./data/cbl/csv/";
     private static final String FILE_NAME = "ChicagoBL-001k.csv";
 
@@ -50,6 +52,10 @@ public class JPDBPerformance {
     }
 
     private static void jpdbOp(String token) throws ParseException, IOException {
+
+        System.out.println("JsonPowerDB Performance for Creating Indexes, Inserting , Updating, Deleting Documents");
+        System.out.println("Data file used = " + FILE_NAME);
+        System.out.println("");
 
         ArrayList<String> columnNameArrayList = getColumnNameFromCSV(FILE_PATH + FILE_NAME);
 
@@ -75,7 +81,6 @@ public class JPDBPerformance {
         System.out.println("Time taken for Making Documents: " + (t2 - t1) + "ms");
 
 //        printData(jsonObjsArrayList);
-
         long ta1 = System.currentTimeMillis();
         insertDataToJSONPowerDb(token, jsonObjsArrayList);
         long ta2 = System.currentTimeMillis();
@@ -160,7 +165,7 @@ public class JPDBPerformance {
                 + jsonObj
                 + "\n"
                 + "}";
-        
+
         return executeCommand(putRequest, IML_PART_URL);
     }
 
@@ -215,7 +220,7 @@ public class JPDBPerformance {
             boolean columnFlag = true;
             while ((strLine = br.readLine()) != null) //Reading from file
             {
-                if(columnFlag) {
+                if (columnFlag) {
                     columnFlag = false;
                     continue;
                 }
