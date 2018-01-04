@@ -1,0 +1,17 @@
+<#if licenseFirst??>
+${licenseFirst}
+</#if>
+${licensePrefix} 
+${licensePrefix}Copyright Notice
+${licensePrefix}
+${licensePrefix}This source code file is created by Hemant Kumar Dugar and is his sole property. 
+${licensePrefix}Hemant Kumar Dugar  reserves the rights to all information contained within this 
+${licensePrefix}source code file. Any copying of this source code file, in whole or in part including 
+${licensePrefix}the concept, idea and logic explained herein by any means for any purpose, 
+${licensePrefix}without the expressed written consent of Hemant Kumar Dugar is a violation 
+${licensePrefix}of copyright law. 
+${licensePrefix}
+${licensePrefix}Copyright © 2018 - Hemant Kumar Dugar - All Rights Reserved
+<#if licenseLast??>
+${licenseLast}
+</#if>
