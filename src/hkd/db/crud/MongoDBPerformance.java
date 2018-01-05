@@ -32,16 +32,10 @@ public class MongoDBPerformance {
     private static final String FILE_NAME = "ChicagoBL-001h.csv";
 
     public static void main(String[] args) {
-        delDatabase();
+        MongoDBUtils.delDatabase(DB_NAME);
         mongoDBOp(FILE_NAME_SMALL);
-        delDatabase();
+        MongoDBUtils.delDatabase(DB_NAME);
         mongoDBOp(FILE_NAME);
-    }
-
-    public static void delDatabase() {
-        MongoClient mongoClient = new MongoClient();
-        mongoClient.dropDatabase(DB_NAME);
-        mongoClient.close();
     }
 
     public static void mongoDBOp(String csvFileName) {
@@ -107,7 +101,8 @@ public class MongoDBPerformance {
             long td1 = System.currentTimeMillis();
             for (int i = 0; i < rowsArrList.size(); i++) //Creating Documents
             {
-                docs.add(getDocument(rowsArrList.get(i), columnNameArrayList));
+                docs.add(MongoDBUtils.getDocument(rowsArrList.get(i), 
+                        columnNameArrayList.toArray(new String[0]), TOTAL_COLS));
             }
             long td2 = System.currentTimeMillis();
             long tdDiff = td2 - td1;
@@ -181,65 +176,4 @@ public class MongoDBPerformance {
 
         }
     }
-
-    public static void printData(MongoCollection<Document> collection) {
-        MongoCursor<Document> cursor1 = collection.find().iterator();
-        try {
-            while (cursor1.hasNext()) {
-                System.out.println(cursor1.next().toJson());
-            }
-        } finally {
-            cursor1.close();
-        }
-    }
-
-    //function to create and return document
-    public static Document getDocument(String strLine, ArrayList<String> colName) {
-        StringBuilder sb = new StringBuilder();
-        Document doc = new Document();
-        int flag = 0, count = 0;
-        char ch;
-        for (int i = 0; i < strLine.length(); i++) {
-            ch = strLine.charAt(i);
-            if (ch == '"' && flag == 0) {
-                flag++;
-            } else if (ch == '"' && flag == 1) {
-                flag = 0;
-            } else if (ch == ',' && flag == 0) {
-                String s = sb.toString();
-                long lval;
-                double dval;
-                boolean bval;
-                try {
-                    dval = Double.parseDouble(s);
-                    int intval = (int) dval;
-                    if (dval - intval == 0.0) {
-                        lval = Long.parseLong(s);
-                        doc.append(colName.get(count), lval);
-                    } else {
-                        doc.append(colName.get(count), dval);
-                    }
-
-                } catch (NumberFormatException e) {
-                    if ("true".equalsIgnoreCase(s) || "false".equalsIgnoreCase(s)) {
-                        bval = Boolean.parseBoolean(s);
-                        doc.append(colName.get(count), bval);
-                    } else {
-                        doc.append(colName.get(count), s);
-                    }
-                } finally {
-                    if (count > (TOTAL_COLS - 2)) {
-                        break;
-                    }
-                }
-                count++;
-                sb.setLength(0);
-            } else {
-                sb.append(ch);
-            }
-        }
-        return doc;
-
-    }
-
 }

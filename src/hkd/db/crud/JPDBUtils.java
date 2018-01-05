@@ -15,8 +15,6 @@ package hkd.db.crud;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -138,43 +136,6 @@ public class JPDBUtils {
             jsonObjArray[i] = JPDBUtils.getJsonObjForLine(allLinesArray[i], allColsArray,totalCols);
         }
         return jsonObjArray;
-    }
-
-    // >>
-    public static String[] getColumnNameFromCSV(String inputFileName) {
-        FileInputStream fstream = null;
-        ArrayList<String> columnNameArrList = new ArrayList<>();
-        String strLine;
-        try {
-            fstream = new FileInputStream(inputFileName);
-            try (final BufferedReader br = new BufferedReader(new InputStreamReader(fstream), 1024 * 1024 * 1)) {
-                strLine = br.readLine();
-                @SuppressWarnings(value = "StringBufferWithoutInitialCapacity")
-                StringBuilder sb = new StringBuilder();
-                char ch;
-                for (int i = 0; i < strLine.length(); i++) {
-                    ch = strLine.charAt(i);
-                    if (ch == ',') {
-                        columnNameArrList.add(sb.toString());
-                        sb.setLength(0);
-                    } else {
-                        sb.append(ch);
-                    }
-                }
-                columnNameArrList.add(sb.toString());
-            }
-        } catch (FileNotFoundException ex) {
-            System.out.println(ex);
-        } catch (IOException ex) {
-            System.out.println(ex);
-        } finally {
-            try {
-                fstream.close();
-            } catch (IOException ex) {
-                // Ignore this exception
-            }
-        }
-        return columnNameArrList.toArray(new String[0]);
     }
 
     // >>

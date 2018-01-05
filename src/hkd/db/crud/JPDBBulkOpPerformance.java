@@ -10,7 +10,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.ParseException;
 
@@ -27,20 +26,20 @@ public class JPDBBulkOpPerformance {
     private static final String BASE_URL = "http://localhost:5577";
 
     private static final int TOTAL_COLS = 14;
-    private static final int BLOCK_SIZE = 990;
+    private static final int BLOCK_SIZE = 1000;
     private static final String SEARCH_COL_NAME = "LICENSE ID";
     private static final String DB_NAME = "BussLic";
     private static final String REL_NAME = "Chicago";
     private static final String FILE_PATH = "./data/cbl/csv/";
     private static final String FILE_NAME_SMALL = "ChicagoBL-000f.csv";
-    private static final String FILE_NAME = "ChicagoBL-010k.csv";
+    private static final String FILE_NAME = "ChicagoBL-500k.csv";
 
     public static void main(String[] args) throws ParseException, IOException {
 
         String token = JPDBUtils.getConnectionToken(CON_TOKEN_CREDENTIAL, BASE_URL);
 
-        JPDBUtils.deleteDatabase(token, DB_NAME, BASE_URL);
-        jpdbBulkOp(token, FILE_NAME_SMALL);
+//        JPDBUtils.deleteDatabase(token, DB_NAME, BASE_URL);
+//        jpdbBulkOp(token, FILE_NAME_SMALL);
 //
         JPDBUtils.deleteDatabase(token, DB_NAME, BASE_URL);
         jpdbBulkOp(token, FILE_NAME);
@@ -48,16 +47,16 @@ public class JPDBBulkOpPerformance {
 
 
     // >>
-    @SuppressWarnings("UseOfSystemOutOrSystemErr")
     private static void jpdbBulkOp(String token, String csvFileName) throws ParseException, IOException {
 
-        System.out.println(">>>>>>>>>>");
-        System.out.println("JsonPowerDB Performance for Bulk Insert of Json Documents");
+        System.out.println("[[ JsonPowerDB ]]");
+        System.out.println("Performance for Bulk Insert of Json Documents");
         System.out.println("Data file used = " + csvFileName);
         System.out.println("Block size = " + BLOCK_SIZE);
+        System.out.println("Number of Indexed Columns = " + TOTAL_COLS);
         System.out.println("");
 
-        String[] columnNameArray = JPDBUtils.getColumnNameFromCSV(FILE_PATH + csvFileName);
+        String[] columnNameArray = CommonUtils.getColumnNameFromCSV(FILE_PATH + csvFileName);
 
         // Bulk insert from file to JsonPowerDB 
         long bit1 = System.currentTimeMillis();
