@@ -22,8 +22,8 @@ public class JPDBBulkOpPerformance {
 //    private static final String CON_TOKEN_CREDENTIAL = "email=himanshu.dugar@login2explore.com&password=dfdfdf";
     private static final String CON_TOKEN_CREDENTIAL = "email=nunna2000@gmail.com&password=dfdfdf";
 
-//    private static final String BASE_URL = "http://dev1api.login2explore.com:5577";
-    private static final String BASE_URL = "http://localhost:5577";
+    private static final String BASE_URL = "http://sandbox4api.login2explore.com:5577";
+//    private static final String BASE_URL = "http://localhost:5577";
 
     private static final int TOTAL_COLS = 14;
     private static final int BLOCK_SIZE = 1000;
@@ -32,7 +32,7 @@ public class JPDBBulkOpPerformance {
     private static final String REL_NAME = "Chicago";
     private static final String FILE_PATH = "./data/cbl/csv/";
     private static final String FILE_NAME_SMALL = "ChicagoBL-000f.csv";
-    private static final String FILE_NAME = "ChicagoBL-500k.csv";
+    private static final String FILE_NAME = "ChicagoBL-100k.csv";
 
     public static void main(String[] args) throws ParseException, IOException {
 
@@ -40,11 +40,10 @@ public class JPDBBulkOpPerformance {
 
 //        JPDBUtils.deleteDatabase(token, DB_NAME, BASE_URL);
 //        jpdbBulkOp(token, FILE_NAME_SMALL);
-//
+
         JPDBUtils.deleteDatabase(token, DB_NAME, BASE_URL);
         jpdbBulkOp(token, FILE_NAME);
     }
-
 
     // >>
     private static void jpdbBulkOp(String token, String csvFileName) throws ParseException, IOException {
@@ -89,11 +88,14 @@ public class JPDBBulkOpPerformance {
                 co++;
                 if (co >= BLOCK_SIZE) {
                     JPDBUtils.insertJSONArray2JsonPowerDB(token, jsonArr, DB_NAME, REL_NAME, BASE_URL);
+                    System.out.println("Inserted: " + co + "rows");
                     jsonArr.clear();
                     co = 0;
                 }
             }
-            JPDBUtils.insertJSONArray2JsonPowerDB(token, jsonArr, DB_NAME, REL_NAME, BASE_URL);
+            if (jsonArr.size() > 0) {
+                JPDBUtils.insertJSONArray2JsonPowerDB(token, jsonArr, DB_NAME, REL_NAME, BASE_URL);
+            }
         } catch (FileNotFoundException ex) {
         } catch (IOException ex) {
         } finally {
