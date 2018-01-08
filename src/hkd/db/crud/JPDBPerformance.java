@@ -39,8 +39,8 @@ public class JPDBPerformance {
 
     private static final int TOTAL_COLS = 14;
     private static final String SEARCH_COL_NAME = "LICENSE ID";
-    private static final String DB_NAME = "BussLic";
-    private static final String REL_NAME = "Chicago";
+    private static final String DB_NAME = "BUSSLICS";
+    private static final String REL_NAME = "CHICAGO";
     private static final String FILE_PATH = "./data/cbl/csv/";
     private static final String FILE_NAME_SMALL = "ChicagoBL-000f.csv";
     private static final String FILE_NAME = "ChicagoBL-020k.csv";
@@ -50,7 +50,7 @@ public class JPDBPerformance {
         String token = getConnectionToken();
 
         deleteDatabase(token);
-//        jpdbOp(token, FILE_NAME_SMALL);
+        jpdbOp(token, FILE_NAME_SMALL);
 //
 //        deleteDatabase(token);
 //        jpdbOp(token, FILE_NAME);

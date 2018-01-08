@@ -22,17 +22,17 @@ public class JPDBBulkOpPerformance {
 //    private static final String CON_TOKEN_CREDENTIAL = "email=himanshu.dugar@login2explore.com&password=dfdfdf";
     private static final String CON_TOKEN_CREDENTIAL = "email=nunna2000@gmail.com&password=dfdfdf";
 
-    private static final String BASE_URL = "http://sandbox4api.login2explore.com:5577";
-//    private static final String BASE_URL = "http://localhost:5577";
+//    private static final String BASE_URL = "http://sandbox4api.login2explore.com:5577";
+    private static final String BASE_URL = "http://localhost:5577";
 
     private static final int TOTAL_COLS = 14;
     private static final int BLOCK_SIZE = 1000;
     private static final String SEARCH_COL_NAME = "LICENSE ID";
-    private static final String DB_NAME = "BussLic";
-    private static final String REL_NAME = "Chicago";
+    private static final String DB_NAME = "BUSSLICS";
+    private static final String REL_NAME = "CHICAGO";
     private static final String FILE_PATH = "./data/cbl/csv/";
     private static final String FILE_NAME_SMALL = "ChicagoBL-000f.csv";
-    private static final String FILE_NAME = "ChicagoBL-100k.csv";
+    private static final String FILE_NAME = "ChicagoBL-010k.csv";
 
     public static void main(String[] args) throws ParseException, IOException {
 

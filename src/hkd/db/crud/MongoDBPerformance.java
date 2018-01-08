@@ -25,8 +25,8 @@ public class MongoDBPerformance {
 
     private static final int TOTAL_COLS = 14;
     private static final String SEARCH_COL_NAME = "LICENSE ID";
-    private static final String DB_NAME = "BussLics";
-    private static final String COLL_NAME = "Chicago";
+    private static final String DB_NAME = "BUSSLICS";
+    private static final String COLL_NAME = "CHICAGO";
     private static final String FILE_PATH = "./data/cbl/csv/";
     private static final String FILE_NAME_SMALL = "ChicagoBL-000f.csv";
     private static final String FILE_NAME = "ChicagoBL-001h.csv";
@@ -34,8 +34,8 @@ public class MongoDBPerformance {
     public static void main(String[] args) {
         MongoDBUtils.delDatabase(DB_NAME);
         mongoDBOp(FILE_NAME_SMALL);
-        MongoDBUtils.delDatabase(DB_NAME);
-        mongoDBOp(FILE_NAME);
+//        MongoDBUtils.delDatabase(DB_NAME);
+//        mongoDBOp(FILE_NAME);
     }
 
     public static void mongoDBOp(String csvFileName) {
